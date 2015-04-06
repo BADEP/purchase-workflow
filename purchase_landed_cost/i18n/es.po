@@ -702,3 +702,9 @@ msgstr "No puede eliminar una distribución de costes confirmada"
 msgid "Cost update cannot be undone because there has been a later update. Restore correct price and try again."
 msgstr "La actualización de coste no puede deshacerse porque ha habido una actualización posterior. Restaure el precio correcto y pruebe otra vez."
 
+#. module: purchase_landed_cost
+#: view:purchase.order:purchase_landed_cost.purchase_order_2_stock_picking_landed_cost
+#: view:stock.picking:purchase_landed_cost.view_picking_form_landed_cost
+msgid "Landed costs"
+msgstr "Costes en destino"
+
