@@ -10,6 +10,8 @@ from odoo.addons.base.tests.common import BaseCommon
 
 @tagged("post_install", "-at_install")
 class TestPurchaseRequestType(BaseCommon):
+    _test_user_groups = None
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -127,7 +129,10 @@ class TestPurchaseRequestType(BaseCommon):
 
     def test_purchase_request_type_company_error(self):
         self.type1.company_id = self.env.company
-        request = self.pr_obj.create({"picking_type_id": self.picking_type.id})
+        # explicit type: with demo data, a demo type without company is the default
+        request = self.pr_obj.create(
+            {"picking_type_id": self.picking_type.id, "request_type": self.type1.id}
+        )
         self.assertEqual(request.company_id, self.type1.company_id)
         with self.assertRaises(ValidationError):
             request.write({"company_id": self.company2.id})
