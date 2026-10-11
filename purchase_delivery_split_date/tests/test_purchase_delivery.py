@@ -12,6 +12,8 @@ from odoo.addons.purchase_stock.tests.common import PurchaseTestCommon
 
 
 class TestDeliverySingle(PurchaseTestCommon):
+    _test_user_groups = None
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -63,7 +65,7 @@ class TestDeliverySingle(PurchaseTestCommon):
                     Command.create(
                         {
                             "product_id": cls.p1.id,
-                            "product_uom_id": cls.p1.uom_id.id,
+                            "uom_id": cls.p1.uom_id.id,
                             "name": cls.p1.name,
                             "price_unit": cls.p1.standard_price,
                             "date_planned": cls.date_sooner,
@@ -73,7 +75,7 @@ class TestDeliverySingle(PurchaseTestCommon):
                     Command.create(
                         {
                             "product_id": cls.p2.id,
-                            "product_uom_id": cls.p2.uom_id.id,
+                            "uom_id": cls.p2.uom_id.id,
                             "name": cls.p2.name,
                             "price_unit": cls.p2.standard_price,
                             "date_planned": cls.date_sooner,
@@ -83,7 +85,7 @@ class TestDeliverySingle(PurchaseTestCommon):
                     Command.create(
                         {
                             "product_id": cls.p1.id,
-                            "product_uom_id": cls.p1.uom_id.id,
+                            "uom_id": cls.p1.uom_id.id,
                             "name": cls.p1.name,
                             "price_unit": cls.p1.standard_price,
                             "date_planned": cls.date_sooner,
@@ -176,7 +178,7 @@ class TestDeliverySingle(PurchaseTestCommon):
         )
         line = self.po.order_line[0]
         line.write({"date_planned": self.date_3rd})
-        self.assertEqual(moves.date_deadline.strftime("%Y-%m-%d"), self.date_3rd)
+        self.assertEqual(moves.date.strftime("%Y-%m-%d"), self.date_3rd)
 
     def test_05_group_multiple_picking_same_date(self):
         """Check multiple picking with same planned date are also merged
@@ -220,8 +222,8 @@ class TestDeliverySingle(PurchaseTestCommon):
             2,
             "There must be 2 pickings when I change the date",
         )
-        self.assertEqual(move1.date_deadline.strftime("%Y-%m-%d"), self.date_later)
-        self.assertEqual(move2.date_deadline.strftime("%Y-%m-%d"), self.date_sooner)
+        self.assertEqual(move1.date.strftime("%Y-%m-%d"), self.date_later)
+        self.assertEqual(move2.date.strftime("%Y-%m-%d"), self.date_sooner)
         self.assertNotEqual(move1.picking_id, move2.picking_id)
         line2.write({"date_planned": self.date_later})
         self.assertEqual(
@@ -245,8 +247,8 @@ class TestDeliverySingle(PurchaseTestCommon):
             2,
             "There must be 2 pickings when I change the date",
         )
-        self.assertEqual(move1.date_deadline.strftime("%Y-%m-%d"), self.date_sooner)
-        self.assertEqual(move2.date_deadline.strftime("%Y-%m-%d"), self.date_later)
+        self.assertEqual(move1.date.strftime("%Y-%m-%d"), self.date_sooner)
+        self.assertEqual(move2.date.strftime("%Y-%m-%d"), self.date_later)
         self.assertNotEqual(move1.picking_id, move2.picking_id)
         line2.write({"date_planned": self.date_sooner})
         self.assertEqual(
@@ -280,7 +282,7 @@ class TestDeliverySingle(PurchaseTestCommon):
             Command.create(
                 {
                     "product_id": self.p3.id,
-                    "product_uom_id": self.p3.uom_id.id,
+                    "uom_id": self.p3.uom_id.id,
                     "name": self.p3.name,
                     "price_unit": self.p3.standard_price,
                     "date_planned": new_date,
@@ -348,7 +350,7 @@ class TestDeliverySingle(PurchaseTestCommon):
             {
                 "order_id": self.po.id,
                 "product_id": self.service_1.id,
-                "product_uom_id": self.service_1.uom_id.id,
+                "uom_id": self.service_1.uom_id.id,
                 "name": self.service_1.name,
                 "price_unit": self.service_1.standard_price,
                 "date_planned": self.date_later,
@@ -440,7 +442,7 @@ class TestDeliverySingle(PurchaseTestCommon):
                 0,
                 {
                     "product_id": self.p3.id,
-                    "product_uom_id": self.p3.uom_id.id,
+                    "uom_id": self.p3.uom_id.id,
                     "name": self.p3.name,
                     "price_unit": self.p3.standard_price,
                     "date_planned": new_date,
@@ -485,7 +487,7 @@ class TestDeliverySingle(PurchaseTestCommon):
                 0,
                 {
                     "product_id": self.p3.id,
-                    "product_uom_id": self.p3.uom_id.id,
+                    "uom_id": self.p3.uom_id.id,
                     "name": self.p3.name,
                     "price_unit": self.p3.standard_price,
                     "date_planned": new_date,

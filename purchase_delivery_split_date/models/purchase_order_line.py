@@ -3,7 +3,8 @@
 # Copyright 2021 Jacques-Etienne Baudoux (BCIM) <je@bcim.be>
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
-import pytz
+from datetime import UTC
+from zoneinfo import ZoneInfo
 
 from odoo import models
 
@@ -20,8 +21,8 @@ class PurchaseOrderLine(models.Model):
         can add additional keys or replace them by others.
         """
         tz = self.order_id.picking_type_id.warehouse_id.partner_id.tz
-        wh_tz = pytz.timezone(tz) if tz else self.env.tz
-        date_planned_tz = self.date_planned.astimezone(pytz.utc).astimezone(wh_tz)
+        wh_tz = ZoneInfo(tz) if tz else self.env.tz
+        date_planned_tz = self.date_planned.replace(tzinfo=UTC).astimezone(wh_tz)
         date = date_planned_tz.date()
         # Split date value to obtain only the attributes year, month and day
         key = (("date_planned", date),)
@@ -35,11 +36,16 @@ class PurchaseOrderLine(models.Model):
         """
         return (self.date_planned,)
 
-    def _create_stock_moves(self, picking):
+    def _create_stock_moves(self, picking=False):
         """Group the receptions in one picking per assignation domain"""
         if not picking:
-            # A picking should be provided
-            return super()._create_stock_moves(picking)
+            # On order confirmation, the moves are created without picking and
+            # assigned to pickings on confirmation (stock.move._assign_picking):
+            # flag them so that they are grouped by date.
+            return super(
+                PurchaseOrderLine,
+                self.with_context(purchase_delivery_split_date=True),
+            )._create_stock_moves(picking)
         moves = self.env["stock.move"]
         tz = picking.picking_type_id.warehouse_id.partner_id.tz
         # Group the order lines by group key
@@ -71,12 +77,22 @@ class PurchaseOrderLine(models.Model):
                 moves += moves_to_assign
         return moves
 
+    def _update_move_dates(self, date_planned=False, date_promised=False):
+        # In 20.0, the planned date of the line is propagated to the scheduled
+        # date of the receipt moves (date_deadline follows the promised date).
+        res = super()._update_move_dates(
+            date_planned=date_planned, date_promised=date_promised
+        )
+        if date_planned:
+            self.move_ids._purchase_split_by_date(date_planned)
+        return res
+
     def _compute_price_unit_and_date_planned_and_name(self):
         """
         If the line product quantity is changed and a seller is found,
         the date_planned is updated from the supplier (in _get_date_planned())
         """
-        date_planned_by_record = dict()
+        date_planned_by_record = {}
         for line in self:
             date_planned_by_record[line.id] = line.date_planned
         res = super()._compute_price_unit_and_date_planned_and_name()

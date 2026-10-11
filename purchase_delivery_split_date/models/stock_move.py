@@ -1,7 +1,8 @@
 # Copyright 2021 Jacques-Etienne Baudoux (BCIM) <je@bcim.be>
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
-import pytz
+from datetime import UTC
+from zoneinfo import ZoneInfo
 
 from odoo import models
 from odoo.fields import Domain
@@ -12,28 +13,35 @@ class StockMove(models.Model):
 
     def _purchase_split_date_get_group_keys(self):
         tz = self.picking_type_id.warehouse_id.partner_id.tz
-        wh_tz = pytz.timezone(tz) if tz else self.env.tz
-        date_planned_tz = self.date_deadline.astimezone(pytz.utc).astimezone(wh_tz)
+        wh_tz = ZoneInfo(tz) if tz else self.env.tz
+        date_planned_tz = self.date.replace(tzinfo=UTC).astimezone(wh_tz)
         date = date_planned_tz.date()
         # Split date value to obtain only the attributes year, month and day
         key = (("date_planned", date),)
         return key
 
+    def _purchase_split_date_applies(self):
+        return bool(
+            self.env.context.get("purchase_delivery_split_date")
+            and self.purchase_line_id
+            and self.date
+        )
+
+    def _key_assign_picking(self):
+        keys = super()._key_assign_picking()
+        if self._purchase_split_date_applies():
+            keys += self._purchase_split_date_get_group_keys()
+        return keys
+
     def _search_picking_for_assignation_domain(self):
         domain = super()._search_picking_for_assignation_domain()
-        if self.env.context.get("purchase_delivery_split_date"):
+        if self._purchase_split_date_applies():
             key = self._purchase_split_date_get_group_keys()
             tz = self.picking_type_id.warehouse_id.partner_id.tz
             domain = Domain.AND(
                 [domain, self.picking_id._purchase_split_date_assign_domain(key, tz)]
             )
         return domain
-
-    def write(self, vals):
-        res = super().write(vals)
-        if "date_deadline" in vals:
-            self._purchase_split_by_date(vals["date_deadline"])
-        return res
 
     def _purchase_split_by_date(self, new_deadline):
         po_moves = self.filtered(
@@ -65,7 +73,7 @@ class StockMove(models.Model):
     def _get_new_picking_values(self):
         vals = super()._get_new_picking_values()
         if self.env.context.get("purchase_delivery_split_date"):
-            is_dropship = all([move._is_dropshipped() for move in self])
+            is_dropship = all(move._is_dropshipped() for move in self)
             if not vals.get("partner_id") or is_dropship:
                 partners = self.purchase_line_id.partner_id
                 vals["partner_id"] = next(iter(partners), partners).id
@@ -76,7 +84,9 @@ class StockMove(models.Model):
         # The core function will remove the partner from the picking if it is
         # different than the one on the moves (Destination Address).
         # For dropshipping the partner on the pick is the contact !
-        if self.env.context.get("purchase_delivery_split_date"):
-            if "partner_id" in vals.keys():
-                vals.pop("partner_id")
+        if (
+            self.env.context.get("purchase_delivery_split_date")
+            and "partner_id" in vals
+        ):
+            vals.pop("partner_id")
         return vals
