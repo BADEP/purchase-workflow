@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-    <record model="ir.ui.view" id="import_invoice_line_wizard_view">
+    <record id="import_invoice_line_wizard_view" model="ir.ui.view">
         <field name="name">import.invoice.line.wizard.form</field>
         <field name="model">import.invoice.line.wizard</field>
         <field name="type">form</field>

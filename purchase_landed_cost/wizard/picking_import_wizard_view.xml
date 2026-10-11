@@ -1,5 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-    <record model="ir.ui.view" id="picking_import_wizard_view">
+    <record id="picking_import_wizard_view" model="ir.ui.view">
         <field name="name">picking.import.wizard.form</field>
         <field name="model">picking.import.wizard</field>
         <field name="type">form</field>

@@ -270,8 +270,7 @@ class PurchaseCostDistribution(models.Model):
             moves_total_qty += move.product_qty
             moves_total_diff_price += move.product_qty * price_diff
         prev_qty_available = product.qty_available - moves_total_qty
-        if prev_qty_available <= 0:
-            prev_qty_available = 0
+        prev_qty_available = max(0, prev_qty_available)
         total_available = prev_qty_available + moves_total_qty
         new_std_price = (
             total_available * product.standard_price + moves_total_diff_price
