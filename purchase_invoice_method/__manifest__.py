@@ -3,9 +3,8 @@
 
 {
     "name": "Purchase Invoice Method",
-    "summary": """
-        Allow to force the invoice method of a purchase""",
-    "version": "19.0.1.0.0",
+    "summary": "Allow to force the invoice method of a purchase",
+    "version": "20.0.1.0.0",
     "license": "AGPL-3",
     "author": "CreuBlanca, Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/purchase-workflow",
