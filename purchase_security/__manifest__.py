@@ -2,7 +2,7 @@
 
 {
     "name": "Purchase Order security",
-    "version": "19.0.1.0.0",
+    "version": "20.0.1.0.0",
     "category": "Purchase",
     "development_status": "Production/Stable",
     "author": "Tecnativa, Odoo Community Association (OCA)",
@@ -13,10 +13,10 @@
     "maintainers": ["pilarvargas-tecnativa"],
     "data": [
         "security/security.xml",
-        "security/ir.model.access.csv",
         "views/purchase_order_views.xml",
         "views/purchase_team_views.xml",
         "views/res_partner_views.xml",
+        "security/ir.access.csv",
     ],
     "installable": True,
     "auto_install": False,
