@@ -2,11 +2,13 @@
 # Copyright 2024 Moduon Team S.L. <info@moduon.team>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
+import typing
+
 from odoo import models
 
 
 class PurchaseOrder(models.Model):
-    _inherit = ["purchase.order", "supplied.product.mixin"]
+    _inherit: typing.ClassVar[list[str]] = ["purchase.order", "supplied.product.mixin"]
     _name = "purchase.order"
 
     def _prepare_invoice(self):

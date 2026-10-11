@@ -2,11 +2,13 @@
 # Copyright 2024 Moduon Team S.L. <info@moduon.team>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
+import typing
+
 from odoo import api, models
 
 
 class AccountMove(models.Model):
-    _inherit = ["account.move", "supplied.product.mixin"]
+    _inherit: typing.ClassVar[list[str]] = ["account.move", "supplied.product.mixin"]
     _name = "account.move"
 
     @api.onchange("invoice_vendor_bill_id")
