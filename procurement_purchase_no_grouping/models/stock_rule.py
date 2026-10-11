@@ -31,8 +31,8 @@ class StockRule(models.Model):
         """
         domain = super()._make_po_get_domain(company_id, values, partner)
         if values.get("grouping") == "product_category":
-            if values.get("supplier"):
-                suppinfo = values["supplier"]
+            suppinfo = (values.get("supplier") or {}).get("supplierinfo")
+            if suppinfo:
                 product = suppinfo.product_id or suppinfo.product_tmpl_id
                 domain += (
                     ("order_line.product_id.categ_id", "=", product.categ_id.id),

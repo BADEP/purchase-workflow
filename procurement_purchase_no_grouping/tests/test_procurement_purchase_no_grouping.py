@@ -8,6 +8,8 @@ from odoo.addons.base.tests.common import BaseCommon
 
 
 class TestProcurementPurchaseNoGrouping(BaseCommon):
+    _test_user_groups = None
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -34,14 +36,13 @@ class TestProcurementPurchaseNoGrouping(BaseCommon):
         }
 
     def _create_product(self, name, category, partner):
-        product = self.env["product.product"].create(
+        return self.env["product.product"].create(
             {
                 "name": name,
                 "categ_id": category.id,
                 "seller_ids": [(0, 0, {"partner_id": partner.id, "min_qty": 1.0})],
             }
         )
-        return product
 
     def _run_procurement(self, product, **extra_values):
         procurement = self.env["stock.rule"].Procurement(
