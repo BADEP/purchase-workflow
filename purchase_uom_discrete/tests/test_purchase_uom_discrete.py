@@ -30,7 +30,7 @@ class TestPurchaseUomDiscrete(PurchaseUomDiscreteCommon):
         """Test Unit-reference pack quantities round UP to a whole quantity."""
         line = self._create_purchase_line_with_form(self.product_pack, 2.7)
 
-        self.assertEqual(line.product_uom_id, self.uom_pack_6)
+        self.assertEqual(line.uom_id, self.uom_pack_6)
         self.assertEqual(line.product_qty, 3.0)
 
     def test_02_integer_quantity_is_unchanged(self):
@@ -43,7 +43,7 @@ class TestPurchaseUomDiscrete(PurchaseUomDiscreteCommon):
         """Test continuous UoMs keep meaningful fractional quantities."""
         line = self._create_purchase_line_with_form(self.product_kg, 2.5)
 
-        self.assertEqual(line.product_uom_id, self.uom_kg)
+        self.assertEqual(line.uom_id, self.uom_kg)
         self.assertEqual(line.product_qty, 2.5)
 
     def test_04_zero_quantity_is_unchanged(self):
