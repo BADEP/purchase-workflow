@@ -335,6 +335,5 @@ def test_onchange_sequence_forbidden_on_purchase_move(self):
     self.assertTrue(move, "Stock move should exist")
 
     # Simulate UI form to trigger onchange
-    with self.assertRaises(UserError):
-        with Form(move) as move_form:
-            move_form.sequence = move.sequence + 10
+    with self.assertRaises(UserError), Form(move) as move_form:
+        move_form.sequence = move.sequence + 10
