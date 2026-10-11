@@ -53,9 +53,11 @@ class PurchaseOrder(models.Model):
     @api.constrains("company_id")
     def _check_po_type_company(self):
         if self.filtered(
-            lambda r: r.order_type.company_id
-            and r.company_id
-            and r.order_type.company_id != r.company_id
+            lambda r: (
+                r.order_type.company_id
+                and r.company_id
+                and r.order_type.company_id != r.company_id
+            )
         ):
             raise ValidationError(
                 self.env._("Document's company and type's company mismatch")
