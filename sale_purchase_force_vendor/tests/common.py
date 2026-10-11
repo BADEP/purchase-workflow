@@ -17,6 +17,7 @@ class TestSalePurchaseForceVendorBase(BaseCommon):
         cls.mto.active = True
         cls.buy = cls.env.ref("purchase_stock.route_warehouse0_buy")
         cls.buy.sale_selectable = True
+        cls.buy.product_selectable = True
         cls.product_a = cls.env["product.product"].create(
             {
                 "name": "Test product A",

@@ -5,6 +5,8 @@ from .common import TestSalePurchaseForceVendorBase
 
 
 class TestSalePurchaseForceVendor(TestSalePurchaseForceVendorBase):
+    _test_user_groups = None
+
     def test_misc(self):
         self.sale_order.action_confirm()
         purchase_orders = self.sale_order._get_purchase_orders()
@@ -29,5 +31,8 @@ class TestSalePurchaseForceVendor(TestSalePurchaseForceVendorBase):
     def test_misc_not_force_vendor_restrict(self):
         self.env.company.sale_purchase_force_vendor_restrict = False
         self.sale_order.action_confirm()
-        self.assertEqual(self.sol_a.vendor_id_domain, [])
-        self.assertEqual(self.sol_b.vendor_id_domain, [])
+        # No restriction: Json domain field holds an always-true domain in 20.0
+        self.assertEqual(self.sol_a.vendor_id_domain, [[1, "=", 1]])
+        self.assertEqual(self.sol_b.vendor_id_domain, [[1, "=", 1]])
+        partners = self.env["res.partner"].search(self.sol_a.vendor_id_domain)
+        self.assertIn(self.partner, partners)

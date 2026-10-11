@@ -18,7 +18,7 @@ class SaleOrderLine(models.Model):
     vendor_id = fields.Many2one(
         comodel_name="res.partner",
     )
-    vendor_id_domain = fields.Binary(
+    vendor_id_domain = fields.Json(
         compute="_compute_vendor_id_domain",
         readonly=True,
         store=False,
@@ -30,7 +30,8 @@ class SaleOrderLine(models.Model):
             domain = (
                 [("id", "in", item.product_id.variant_seller_ids.partner_id.ids)]
                 if item.order_id.sale_purchase_force_vendor_restrict
-                else []
+                # an empty Json list is stored as False (match nothing)
+                else [(1, "=", 1)]
             )
             item.vendor_id_domain = domain
 
@@ -52,11 +53,14 @@ class SaleOrderLine(models.Model):
         res = super()._prepare_procurement_values()
         if self.vendor_id:
             product = self.product_id
-            suppinfo = product.with_company(self.company_id.id)._select_seller(
+            seller_info = product.with_company(self.company_id.id)._select_seller(
                 partner_id=self.vendor_id,
                 quantity=self.product_uom_qty,
                 uom_id=self.product_uom_id,
             )
+            # seller_info is a dict in 20.0; its supplierinfo is empty when the
+            # last confirmed purchase line is used as fallback seller
+            suppinfo = seller_info.get("supplierinfo") if seller_info else None
             if not suppinfo:
                 # By default user with group_sale_salesman group can not creates
                 # supplierinfo records.
