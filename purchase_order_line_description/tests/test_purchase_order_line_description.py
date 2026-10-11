@@ -44,7 +44,7 @@ class TestPurchaseOrderLineDescription(SavepointCaseWithUserDemo):
                             "name": cls.product.name,
                             "price_unit": 79.80,
                             "product_qty": 15.0,
-                            "product_uom_id": cls.env.ref("uom.product_uom_unit").id,
+                            "uom_id": cls.env.ref("uom.product_uom_unit").id,
                             "date_planned": fields.Date.today(),
                         },
                     )
