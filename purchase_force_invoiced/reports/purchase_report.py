@@ -11,15 +11,25 @@ _logger = logging.getLogger(__name__)
 class PurchaseReport(models.Model):
     _inherit = "purchase.report"
 
-    def _select(self):
+    def _select_list(self, table):
         """Put quantity to be billed as 0 if it has been forced."""
-        select_sql = super()._select()
-        old = "case when t.purchase_method = 'purchase'"
-        new = "case when po.force_invoiced then 0.0 when t.purchase_method = 'purchase'"
-        code = select_sql.code.replace(old, new)
-        if "force_invoiced" not in code:
+        select_list = super()._select_list(table)
+        alias = " AS qty_to_be_billed"
+        for index, item in enumerate(select_list):
+            code, params, to_flush = item._sql_tuple
+            if code.rstrip().endswith(alias):
+                expression = SQL(
+                    code.rstrip()[: -len(alias)], *params, to_flush=to_flush
+                )
+                select_list[index] = SQL(
+                    "CASE WHEN %s THEN 0.0 ELSE %s END AS qty_to_be_billed",
+                    table.order_id.force_invoiced,
+                    expression,
+                )
+                break
+        else:
             _logger.error(
                 "Query substitution failed. Check 'purchase/report/purchase_report.py "
                 "for changes"
             )
-        return SQL(code, *select_sql.params)
+        return select_list
