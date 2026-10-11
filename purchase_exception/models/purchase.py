@@ -3,11 +3,13 @@
 # Mourad EL HADJ MIMOUNE <mourad.elhadj.mimoune@akretion.com>
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
+import typing
+
 from odoo import api, models
 
 
 class PurchaseOrder(models.Model):
-    _inherit = ["purchase.order", "base.exception"]
+    _inherit: typing.ClassVar[list[str]] = ["purchase.order", "base.exception"]
     _name = "purchase.order"
     _order = "main_exception_id asc, date_order desc, name desc"
 
@@ -66,5 +68,4 @@ class PurchaseOrder(models.Model):
 
     @api.model
     def _get_popup_action(self):
-        action = self.env.ref("purchase_exception.action_purchase_exception_confirm")
-        return action
+        return self.env.ref("purchase_exception.action_purchase_exception_confirm")

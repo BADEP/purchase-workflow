@@ -5,17 +5,17 @@
 {
     "name": "Purchase Exception",
     "summary": "Custom exceptions on purchase order",
-    "version": "19.0.1.0.0",
+    "version": "20.0.1.0.0",
     "category": "Generic Modules/Purchase",
     "author": "Akretion, Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/purchase-workflow",
     "depends": ["purchase", "base_exception"],
     "license": "AGPL-3",
     "data": [
-        "security/ir.model.access.csv",
         "data/purchase_exception_data.xml",
         "wizard/purchase_exception_confirm_view.xml",
         "views/purchase_view.xml",
+        "security/ir.access.csv",
     ],
     "installable": True,
 }

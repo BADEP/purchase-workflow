@@ -3,11 +3,16 @@
 # Mourad EL HADJ MIMOUNE <mourad.elhadj.mimoune@akretion.com>
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
+import typing
+
 from odoo import api, fields, models
 
 
 class PurchaseOrderLine(models.Model):
-    _inherit = ["purchase.order.line", "base.exception.method"]
+    _inherit: typing.ClassVar[list[str]] = [
+        "purchase.order.line",
+        "base.exception.method",
+    ]
     _name = "purchase.order.line"
 
     ignore_exception = fields.Boolean(
