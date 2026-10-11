@@ -103,8 +103,10 @@ class TestPurchaseRequest(TransactionCase):
         vals = {"supplier_id": self.supplier.id}
 
         # It is required to have a picking type
-        purchase_request.picking_type_id = False
+        # Odoo 20: assertRaises flushes on savepoint, so the (required) field
+        # must only be emptied inside the protected block.
         with self.assertRaisesRegex(UserError, "a Picking Type"):
+            purchase_request.picking_type_id = False
             self.wiz.with_context(
                 active_model="purchase.request",
                 active_ids=[purchase_request.id],

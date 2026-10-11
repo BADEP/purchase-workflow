@@ -10,7 +10,7 @@ class StockRule(models.Model):
     @api.model
     def _prepare_purchase_request_line(self, request_id, procurement):
         # Note: uom_po_id doesn't exist in Odoo 19, use product.uom_id
-        procurement_uom_po_qty = procurement.product_uom._compute_quantity(
+        procurement_uom_po_qty = procurement.uom_id._compute_quantity(
             procurement.product_qty, procurement.product_id.uom_id
         )
         return {
@@ -47,12 +47,11 @@ class StockRule(models.Model):
         extended.
         :return: False
         """
-        domain = (
+        return (
             ("state", "=", "draft"),
             ("picking_type_id", "=", self.picking_type_id.id),
             ("company_id", "=", values["company_id"].id),
         )
-        return domain
 
     def is_create_purchase_request_allowed(self, procurement):
         """
@@ -76,7 +75,7 @@ class StockRule(models.Model):
             for index in indexes_to_pop:
                 procurements.pop(index)
         if not procurements:
-            return
+            return None
         return super()._run_buy(procurements)
 
     def create_purchase_request(self, procurement_group):
@@ -93,7 +92,7 @@ class StockRule(models.Model):
         if domain in cache:
             pr = cache[domain]
         elif domain:
-            pr = self.env["purchase.request"].search([dom for dom in domain])
+            pr = self.env["purchase.request"].search(list(domain))
             pr = pr[0] if pr else False
             cache[domain] = pr
         if not pr:
