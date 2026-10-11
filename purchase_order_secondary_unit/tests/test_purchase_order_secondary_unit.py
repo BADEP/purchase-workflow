@@ -8,6 +8,8 @@ from .common import TestPurchaseSecondaryUnitCommon
 
 @tagged("-at_install", "post_install")
 class TestPurchaseOrderSecondaryUnit(TestPurchaseSecondaryUnitCommon):
+    _test_user_groups = None
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -21,7 +23,7 @@ class TestPurchaseOrderSecondaryUnit(TestPurchaseSecondaryUnitCommon):
                         "name": cls.product.name,
                         "product_id": cls.product.id,
                         "product_qty": 1,
-                        "product_uom_id": cls.product.uom_id.id,
+                        "uom_id": cls.product.uom_id.id,
                         "price_unit": 1000.00,
                         "date_planned": fields.Datetime.now(),
                     },
@@ -42,7 +44,7 @@ class TestPurchaseOrderSecondaryUnit(TestPurchaseSecondaryUnitCommon):
             # Test onchange product uom
             line.secondary_uom_qty = 3500.0
             self.assertEqual(line.product_qty, 2450.0)
-            line.product_uom_id = self.product_uom_gram
+            line.uom_id = self.product_uom_gram
             self.assertEqual(line.product_qty, 2450000.0)
             self.assertEqual(line.secondary_uom_qty, 3500.0)
 
@@ -80,6 +82,7 @@ class TestPurchaseOrderSecondaryUnit(TestPurchaseSecondaryUnitCommon):
                 "partner_id": self.partner.id,
                 "product_tmpl_id": self.product.product_tmpl_id.id,
                 "price": 19.95,
+                "min_qty": 0.0,
             }
         )
         purchase_order = Form(self.purchase_order_obj)
@@ -91,7 +94,7 @@ class TestPurchaseOrderSecondaryUnit(TestPurchaseSecondaryUnitCommon):
             self.assertAlmostEqual(line.secondary_uom_price, 17.96)
             self.assertAlmostEqual(line.price_unit, 19.95)
 
-    def test_purchase_order_confirm_creates_supplierinfo_with_secondary_uom(self):
+    def test_purchase_order_confirm_keeps_secondary_uom_on_last_po_line(self):
         new_product = self.env["product.product"].create(
             {
                 "name": "New Product",
@@ -114,7 +117,7 @@ class TestPurchaseOrderSecondaryUnit(TestPurchaseSecondaryUnitCommon):
                         {
                             "product_id": new_product.id,
                             "product_qty": 10,
-                            "product_uom_id": new_product.uom_id.id,
+                            "uom_id": new_product.uom_id.id,
                             "price_unit": 50.0,
                             "secondary_uom_id": secondary_unit.id,
                             "secondary_uom_qty": 2.0,
@@ -124,8 +127,10 @@ class TestPurchaseOrderSecondaryUnit(TestPurchaseSecondaryUnitCommon):
             }
         )
         po.button_confirm()
-        # Check that supplierinfo was created with secondary_uom_id
-        supplierinfo = new_product.seller_ids
-        self.assertTrue(supplierinfo)
-        self.assertEqual(supplierinfo.partner_id, self.partner)
-        self.assertEqual(supplierinfo.secondary_uom_id, secondary_unit)
+        # Odoo 20 no longer creates vendor pricelists on confirmation: the last
+        # confirmed purchase line acts as the vendor price (fallback seller).
+        self.assertFalse(new_product.seller_ids)
+        seller_info = new_product._select_seller(partner_id=self.partner)
+        self.assertEqual(seller_info["partner_id"], self.partner)
+        self.assertEqual(seller_info["price"], 50.0)
+        self.assertEqual(po.order_line.secondary_uom_id, secondary_unit)

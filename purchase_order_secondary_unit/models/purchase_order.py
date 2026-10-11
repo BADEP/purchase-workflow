@@ -1,24 +1,20 @@
 # Copyright 2018 Tecnativa - Sergio Teruel
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+from typing import ClassVar
+
 from odoo import api, fields, models
 from odoo.tools import float_compare
 
 
-class PurchaseOrder(models.Model):
-    _inherit = "purchase.order"
-
-    def _prepare_supplier_info(self, partner, line, price, currency):
-        vals = super()._prepare_supplier_info(partner, line, price, currency)
-        vals["secondary_uom_id"] = line.secondary_uom_id.id
-        return vals
-
-
 class PurchaseOrderLine(models.Model):
-    _inherit = ["purchase.order.line", "product.secondary.unit.mixin"]
+    _inherit: ClassVar[list[str]] = [
+        "purchase.order.line",
+        "product.secondary.unit.mixin",
+    ]
     _name = "purchase.order.line"
-    _secondary_unit_fields = {
+    _secondary_unit_fields: ClassVar[dict[str, str]] = {
         "qty_field": "product_qty",
-        "uom_field": "product_uom_id",
+        "uom_field": "uom_id",
     }
     _product_uom_field = "uom_id"
 
@@ -38,7 +34,7 @@ class PurchaseOrderLine(models.Model):
         store=True,
     )
 
-    @api.depends("secondary_uom_qty", "secondary_uom_id", "product_uom_id")
+    @api.depends("secondary_uom_qty", "secondary_uom_id", "uom_id")
     def _compute_product_qty(self):
         self._compute_helper_target_field_qty()
 
