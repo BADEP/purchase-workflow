@@ -4,6 +4,8 @@ from odoo.addons.base.tests.common import BaseCommon
 
 
 class TestPurchaseTag(BaseCommon):
+    _test_user_groups = None
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -35,5 +37,5 @@ class TestPurchaseTag(BaseCommon):
 
     def test_recursion_error(self):
         # Trigger recursion to raise a UserError from Odoo's core.
-        with self.assertRaisesRegex(UserError, "Recursion Detected."):
+        with self.assertRaisesRegex(UserError, "You are creating a loop"):
             self.tag_parent.write({"parent_id": self.tag_grandchild.id})
