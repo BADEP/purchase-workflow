@@ -4,8 +4,8 @@
 
 import datetime
 
-import odoo.tests.common as common
 from odoo import Command, fields
+from odoo.tests import common
 
 
 class TestPurchaseLastPriceInfo(common.TransactionCase):
