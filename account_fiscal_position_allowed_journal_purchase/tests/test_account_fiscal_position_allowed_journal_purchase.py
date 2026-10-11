@@ -38,7 +38,7 @@ class TestAccountFiscalPositionAllowedJournalPurchase(TransactionCase):
                         {
                             "name": "Purchase order line 01",
                             "product_id": cls.product_01.id,
-                            "product_uom_id": cls.product_01.uom_id.id,
+                            "uom_id": cls.product_01.uom_id.id,
                             "product_qty": 1,
                             "price_unit": 1,
                             "date_planned": fields.Date.today(),

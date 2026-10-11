@@ -3,9 +3,8 @@
 
 {
     "name": "Account Fiscal Position Allowed Journal Purchase",
-    "summary": """
-        Use an allowed journal when creating an invoice from a purchase order.""",
-    "version": "19.0.1.0.0",
+    "summary": "Use an allowed journal when creating an invoice from a purchase order.",
+    "version": "20.0.1.0.0",
     "development_status": "Beta",
     "license": "AGPL-3",
     "author": "ACSONE SA/NV,Odoo Community Association (OCA)",
