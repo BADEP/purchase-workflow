@@ -9,6 +9,10 @@ from odoo.addons.base.tests.common import BaseCommon
 # currency, so a foreign -> company conversion divides by the rate.
 DATE_1 = "2026-03-01"  # rate 1.0  -> 1000 (company) for 1000 (foreign)
 DATE_2 = "2026-03-10"  # rate 2.0  ->  500 (company) for 1000 (foreign)
+# Odoo 20: a rate dated D only applies from D+1 (res.currency._get_rates uses
+# name < date), so the rates are recorded the day before they must apply.
+RATE_DATE_1 = "2026-02-28"
+RATE_DATE_2 = "2026-03-09"
 
 
 class PurchaseStockDateDoneRevaluationCommon(BaseCommon):
@@ -55,13 +59,13 @@ class PurchaseStockDateDoneRevaluationCommon(BaseCommon):
         cls.env["res.currency.rate"].create(
             [
                 {
-                    "name": DATE_1,
+                    "name": RATE_DATE_1,
                     "rate": 1.0,
                     "currency_id": currency.id,
                     "company_id": cls.company.id,
                 },
                 {
-                    "name": DATE_2,
+                    "name": RATE_DATE_2,
                     "rate": 2.0,
                     "currency_id": currency.id,
                     "company_id": cls.company.id,
@@ -82,7 +86,7 @@ class PurchaseStockDateDoneRevaluationCommon(BaseCommon):
                             "product_qty": 10.0,
                             "price_unit": 100.0,
                             "name": self.product.name,
-                            "product_uom_id": self.product.uom_id.id,
+                            "uom_id": self.product.uom_id.id,
                         }
                     )
                 ],
