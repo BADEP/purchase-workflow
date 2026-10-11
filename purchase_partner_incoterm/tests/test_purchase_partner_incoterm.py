@@ -86,7 +86,10 @@ class TestPurchasePartnerIncoterm(TransactionCase):
 
         values = [
             {
-                "supplier": supplier,
+                # Odoo 20: supplier is a seller info dict, partner is
+                # passed in procurement_partner
+                "supplier": supplier._get_seller_info(),
+                "procurement_partner": supplier.partner_id,
                 "date_planned": fields.Datetime.to_string(fields.Datetime.now()),
                 "reference_ids": self.env["stock.reference"],
             }
