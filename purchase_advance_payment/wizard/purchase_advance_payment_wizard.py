@@ -87,18 +87,17 @@ class AccountVoucherWizardPurchase(models.TransientModel):
             raise exceptions.ValidationError(
                 self.env._("Amount of advance must be positive.")
             )
-        if self.env.context.get("active_id", False):
-            if (
-                self.currency_id.compare_amounts(
-                    self.currency_amount, self.order_id.amount_residual
+        if self.env.context.get("active_id", False) and (
+            self.currency_id.compare_amounts(
+                self.currency_amount, self.order_id.amount_residual
+            )
+            > 0
+        ):
+            raise exceptions.ValidationError(
+                self.env._(
+                    "Amount of advance is greater than residual amount on purchase"
                 )
-                > 0
-            ):
-                raise exceptions.ValidationError(
-                    self.env._(
-                        "Amount of advance is greater than residual amount on purchase"
-                    )
-                )
+            )
 
     @api.model
     def default_get(self, fields_list):
@@ -181,7 +180,7 @@ class AccountVoucherWizardPurchase(models.TransientModel):
             if bool(
                 self.env["ir.config_parameter"]
                 .sudo()
-                .get_param("purchase_advance_payment.auto_post_advance_payments")
+                .get_str("purchase_advance_payment.auto_post_advance_payments")
             ):
                 payment.action_post()
 
