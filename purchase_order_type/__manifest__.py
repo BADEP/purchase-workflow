@@ -3,19 +3,18 @@
 
 {
     "name": "Purchase Order Type",
-    "version": "19.0.1.0.2",
+    "version": "20.0.1.0.0",
     "author": "Camptocamp, Odoo Community Association (OCA)",
     "license": "AGPL-3",
     "category": "Purchase Management",
     "depends": ["purchase"],
     "website": "https://github.com/OCA/purchase-workflow",
     "data": [
-        "security/ir.model.access.csv",
-        "security/security.xml",
         "views/view_purchase_order_type.xml",
         "views/view_purchase_order.xml",
         "views/res_partner_view.xml",
         "data/purchase_order_type.xml",
+        "security/ir.access.csv",
     ],
     "installable": True,
     "auto_install": False,

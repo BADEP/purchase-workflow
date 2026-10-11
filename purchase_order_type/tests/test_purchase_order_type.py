@@ -143,7 +143,7 @@ class TestPurchaseOrderType(common.TransactionCase):
                 "name": product.name,
                 "product_id": product.id,
                 "product_qty": qty,
-                "product_uom_id": product.uom_id.id,
+                "uom_id": product.uom_id.id,
                 "price_unit": 100,
                 "date_planned": fields.Datetime.now(),
             }
@@ -189,7 +189,7 @@ class TestPurchaseOrderType(common.TransactionCase):
                     "name": self.product_conference_chair.name,
                     "product_id": self.product_conference_chair.id,
                     "product_qty": 3,
-                    "product_uom_id": self.product_conference_chair.uom_id.id,
+                    "uom_id": self.product_conference_chair.uom_id.id,
                     "price_unit": 100,
                     "date_planned": fields.Datetime.now(),
                 },
