@@ -41,13 +41,14 @@ class PurchaseOrderLine(models.Model):
             ]
             if not self.env["purchase.order.line"].search_count(domain, limit=1):
                 params = {"order_id": line.order_id}
-                seller = line.product_id._select_seller(
+                seller_info = line.product_id._select_seller(
                     partner_id=line.partner_id,
                     quantity=line.product_qty,
                     date=line.order_id.date_order and line.order_id.date_order.date(),
-                    uom_id=line.product_uom_id,
+                    uom_id=line.uom_id,
                     params=params,
                 )
+                seller = seller_info.get("supplierinfo")
                 if seller:
                     line._update_supplierinfo(seller)
 
@@ -63,9 +64,9 @@ class PurchaseOrderLine(models.Model):
                 self.date_order or fields.Date.today(),
             )
         # convert according to the UoM if necessary
-        if self.product_uom_id and self.product_uom_id != seller.product_uom_id:
-            new_seller_price = self.product_uom_id._compute_price(
-                new_seller_price, seller.product_uom_id
+        if self.uom_id and self.uom_id != seller.uom_id:
+            new_seller_price = self.uom_id._compute_price(
+                new_seller_price, seller.uom_id
             )
         # Set price
         if new_seller_price != seller.price:

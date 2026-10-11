@@ -11,6 +11,8 @@ from odoo.addons.base.tests.common import BaseCommon
 
 
 class TestPurchaseOrderSupplierinfoUpdate(BaseCommon):
+    _test_user_groups = None
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -81,15 +83,19 @@ class TestPurchaseOrderSupplierinfoUpdate(BaseCommon):
         purchase_order_2 = po_form_2.save()
         purchase_order_2.button_confirm()
         # Change price in second purchase
-        with Form(purchase_order_2) as po_form_2:
-            with po_form_2.order_line.edit(0) as po_line_form:
-                po_line_form.price_unit = 300
+        with (
+            Form(purchase_order_2) as po_form_2,
+            po_form_2.order_line.edit(0) as po_line_form,
+        ):
+            po_line_form.price_unit = 300
         self.assertEqual(self.supplierinfo.price, 300)
         # Change price in first purchase. This doesn't update supplierinfo
         # because it isn't the last purchase of this product by this supplier
-        with Form(purchase_order_1) as po_form_1:
-            with po_form_1.order_line.edit(0) as po_line_form:
-                po_line_form.price_unit = 400
+        with (
+            Form(purchase_order_1) as po_form_1,
+            po_form_1.order_line.edit(0) as po_line_form,
+        ):
+            po_line_form.price_unit = 400
         self.assertEqual(self.supplierinfo.price, 300)
 
     def test_create_new_line_in_a_confirmed_po(self):
@@ -120,7 +126,7 @@ class TestPurchaseOrderSupplierinfoUpdate(BaseCommon):
                     Command.create(
                         {
                             "product_id": self.product_2.id,
-                            "product_uom_id": self.product_2.uom_id.id,
+                            "uom_id": self.product_2.uom_id.id,
                             "price_unit": 20.00,
                             "discount": 10.00,
                         }
