@@ -13,12 +13,12 @@ class StockRule(models.Model):
         res = super()._prepare_purchase_order(company_id, origins, values)
         dates = [fields.Datetime.from_string(value["date_planned"]) for value in values]
         values = values[0]
-        partner = values["supplier"].partner_id
+        partner = values["procurement_partner"]
         procurement_date_planned = min(dates)
         schedule_date = procurement_date_planned - relativedelta(
             days=company_id.days_to_purchase
         )
-        delay = -1 * values["supplier"].delay
+        delay = -1 * values["supplier"].get("delay", 0)
         purchase_date = partner.supplier_plan_days(schedule_date, delay)
         res["date_order"] = purchase_date
         return res

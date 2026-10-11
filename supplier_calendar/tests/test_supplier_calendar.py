@@ -1,6 +1,5 @@
 # Copyright 2020 ForgeFlow S.L.
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl.html).
-from datetime import datetime
 
 from odoo import Command, fields
 from odoo.tests import tagged
@@ -10,6 +9,8 @@ from odoo.addons.base.tests.common import BaseCommon
 
 @tagged("post_install", "-at_install")
 class TestStockWarehouseCalendar(BaseCommon):
+    _test_user_groups = None
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -24,6 +25,7 @@ class TestStockWarehouseCalendar(BaseCommon):
         cls.customer_location = cls.env.ref("stock.stock_location_customers")
         cls.picking_type_out = cls.env.ref("stock.picking_type_out")
         cls.route_buy = cls.env.ref("purchase_stock.route_warehouse0_buy").id
+        cls.env.ref("purchase_stock.route_warehouse0_buy").product_selectable = True
 
         # Create product
         cls.product = cls.env["product.product"].create(
@@ -75,7 +77,7 @@ class TestStockWarehouseCalendar(BaseCommon):
                 "location_id": self.stock_location.id,
                 "location_dest_id": self.customer_location.id,
                 "product_id": self.product.id,
-                "product_uom": self.product.uom_id.id,
+                "uom_id": self.product.uom_id.id,
                 "product_uom_qty": 80.0,
                 "procure_method": "make_to_order",
                 "picking_id": customer_picking.id,
@@ -130,9 +132,11 @@ class TestStockWarehouseCalendar(BaseCommon):
         # We want to test the case when only the seller is provided and there is no
         # other date.
         test_date = self.company_partner.supplier_plan_days(
-            datetime.today(), self.seller_01.delay
+            fields.Datetime.now(), self.seller_01.delay
         )
-        date = self.env["purchase.order.line"]._get_date_planned(self.seller_01)
+        date = self.env["purchase.order.line"]._get_date_planned(
+            self.seller_01._get_seller_info()
+        )
         self.assertEqual(test_date, date)
 
     def test_04_supplier_plan_days_without_delay(self):
