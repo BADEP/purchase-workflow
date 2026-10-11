@@ -14,8 +14,3 @@ class PurchaseOrder(models.Model):
         help="The assigned value will be set on the corresponding field of the "
         "incoming stock picking.",
     )
-
-    def _prepare_picking(self):
-        res = super()._prepare_picking()
-        res["owner_id"] = self.owner_id.id
-        return res
