@@ -8,6 +8,8 @@ from odoo.addons.base.tests.common import BaseCommon
 
 @tagged("post_install", "-at_install")
 class TestPurchase(BaseCommon):
+    _test_user_groups = None
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -64,8 +66,8 @@ class TestPurchase(BaseCommon):
 
         # Second case: Clear the partner's purchase note and test company purchase note
         self.partner_a.purchase_note = False
-        self.env["ir.config_parameter"].sudo().set_param(
-            "purchase.use_purchase_note", "true"
+        self.env["ir.config_parameter"].sudo().set_bool(
+            "purchase.use_purchase_note", True
         )
 
         purchase_order = self.env["purchase.order"].create(
@@ -92,8 +94,8 @@ class TestPurchase(BaseCommon):
 
     def test_onchange_no_partner_note_and_setting_disabled(self):
         """Test note is cleared when partner has no note and setting is off."""
-        self.env["ir.config_parameter"].sudo().set_param(
-            "purchase.use_purchase_note", "false"
+        self.env["ir.config_parameter"].sudo().set_bool(
+            "purchase.use_purchase_note", False
         )
         partner_b = self.env["res.partner"].create({"name": "Partner B"})
 
