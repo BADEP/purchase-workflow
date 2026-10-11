@@ -6,6 +6,8 @@ from odoo.addons.base.tests.common import BaseCommon
 
 
 class TestPurchasePackaging(BaseCommon):
+    _test_user_groups = None
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -64,12 +66,14 @@ class TestPurchasePackaging(BaseCommon):
             ]
         )
         self.assertTrue(po_line, "PO line should have been created")
-        self.assertEqual(po_line.product_uom_id, self.packaging_uom)
+        self.assertEqual(po_line.uom_id, self.packaging_uom)
         self.assertEqual(po_line.product_qty, 2.0)
 
     def test_purchase_packaging_from_move(self):
         """Test if packaging UoM is passed from stock move to procurement to PO line"""
         buy_route = self.env.ref("purchase_stock.route_warehouse0_buy")
+        # Odoo 20 enforces the route_ids domain (product_selectable) on write
+        buy_route.product_selectable = True
         self.product.route_ids = [Command.link(buy_route.id)]
         move = self.env["stock.move"].create(
             {
@@ -78,7 +82,7 @@ class TestPurchasePackaging(BaseCommon):
                 "location_id": self.warehouse.lot_stock_id.id,
                 "product_id": self.product.id,
                 "product_uom_qty": 18.0,
-                "product_uom": self.uom_unit.id,
+                "uom_id": self.uom_unit.id,
                 "procure_method": "make_to_order",
             }
         )
@@ -92,7 +96,7 @@ class TestPurchasePackaging(BaseCommon):
         )
 
         self.assertTrue(po_line, "PO line should have been created from move")
-        self.assertEqual(po_line.product_uom_id, self.packaging_uom)
+        self.assertEqual(po_line.uom_id, self.packaging_uom)
         self.assertEqual(po_line.product_qty, 3.0)  # 18 / 6
 
     def test_purchase_packaging_price_converted(self):
@@ -107,7 +111,7 @@ class TestPurchasePackaging(BaseCommon):
         )
         # Vendor sells by pallet of 24 at 240.0 (i.e. 10.0 per unit)
         self.product.seller_ids.write(
-            {"product_uom_id": pallet_uom.id, "price": 240.0, "min_qty": 0}
+            {"uom_id": pallet_uom.id, "price": 240.0, "min_qty": 0}
         )
         values = {
             "warehouse_id": self.warehouse,
@@ -134,7 +138,7 @@ class TestPurchasePackaging(BaseCommon):
                 ("order_id.origin", "ilike", "TEST_PROC_PRICE"),
             ]
         )
-        self.assertEqual(po_line.product_uom_id, self.packaging_uom)
+        self.assertEqual(po_line.uom_id, self.packaging_uom)
         self.assertEqual(po_line.product_qty, 2.0)
         # 2 boxes of 6 at 10.0/unit -> 60.0 per box, 120.0 total
         self.assertAlmostEqual(po_line.price_unit, 60.0)
