@@ -3,7 +3,7 @@
 # Copyright 2019 Tecnativa - Sergio Teruel
 # License AGPL-3 - See http://www.gnu.org/licenses/agpl-3
 
-from datetime import date, datetime
+from datetime import date
 
 from odoo import api, fields, models
 
@@ -16,7 +16,7 @@ EMPTY_SORT_VALUES = {
     "boolean": False,
     "char": "",
     "date": date.min,
-    "datetime": datetime.min,
+    "datetime": fields.Datetime.to_datetime(date.min),
     "float": 0.0,
     "html": "",
     "integer": 0,
