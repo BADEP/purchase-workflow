@@ -17,6 +17,6 @@ had the field discount4, we could extend it like this:
 @api.model
 def _get_purchase_discount_fields(self):
     discount_fields = super()._get_purchase_discount_fields()
-    discount_fields += [('discount4', _('Discount 4'))]
+    discount_fields += [("discount4", _("Discount 4"))]
     return discount_fields
 ```
