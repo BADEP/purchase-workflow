@@ -88,7 +88,7 @@ class ProductProduct(models.Model):
                     item.last_purchase_line_id.company_id, item.last_purchase_date
                 )
                 item.last_purchase_price_currency_rate = rates.get(
-                    item.last_purchase_currency_id.id
-                )
+                    item.last_purchase_currency_id.id, (0.0, None)
+                )[0]
             else:
                 item.last_purchase_price_currency_rate = 1
