@@ -14,3 +14,4 @@ class PurchaseOrder(models.Model):
         lines = line_obj.search([("purchase_id", "=", self.id)])
         if lines:
             return lines.get_action_purchase_cost_distribution()
+        return None

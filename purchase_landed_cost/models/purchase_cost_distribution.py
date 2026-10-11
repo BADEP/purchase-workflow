@@ -235,7 +235,7 @@ class PurchaseCostDistribution(models.Model):
     def action_calculate(self):
         for distribution in self:
             # Check expense lines for amount 0
-            if any([not x.expense_amount for x in distribution.expense_lines]):
+            if any(not x.expense_amount for x in distribution.expense_lines):
                 raise UserError(
                     self.env._("Please enter an amount for all the expenses")
                 )
@@ -407,7 +407,7 @@ class PurchaseCostDistributionLine(models.Model):
         string="Quantity", compute="_compute_product_qty", store=True
     )
     product_uom = fields.Many2one(
-        comodel_name="uom.uom", string="Unit of measure", related="move_id.product_uom"
+        comodel_name="uom.uom", string="Unit of measure", related="move_id.uom_id"
     )
     product_price_unit = fields.Float(string="Unit price", related="move_id.price_unit")
     expense_lines = fields.One2many(

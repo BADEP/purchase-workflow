@@ -3,8 +3,6 @@
 # Copyright 2024 Tecnativa - Carolina Fernandez
 # License AGPL-3 - See http://www.gnu.org/licenses/agpl-3.0.html
 
-from datetime import datetime
-
 from odoo import fields
 from odoo.exceptions import UserError
 from odoo.tests import common, tagged
@@ -64,7 +62,7 @@ class TestPurchaseLandedCost(common.TransactionCase):
                             "product_id": cls.product.id,
                             "product_qty": 5.0,
                             "name": cls.product.name,
-                            "product_uom_id": cls.product.uom_id.id,
+                            "uom_id": cls.product.uom_id.id,
                             "price_unit": 3.0,
                             "date_planned": fields.Date.today(),
                         },
@@ -82,7 +80,7 @@ class TestPurchaseLandedCost(common.TransactionCase):
             {
                 "partner_id": cls.supplier.id,
                 "move_type": "in_invoice",
-                "invoice_date": datetime.now(),
+                "invoice_date": fields.Date.today(),
                 "invoice_line_ids": [
                     (
                         0,
