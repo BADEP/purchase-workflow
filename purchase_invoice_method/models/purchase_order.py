@@ -26,8 +26,9 @@ class PurchaseOrderLine(models.Model):
     def _compute_qty_invoiced(self):
         ret = super()._compute_qty_invoiced()
         for line in self.filtered(
-            lambda r: r.order_id.invoice_method
-            and r.order_id.state in ["purchase", "done"]
+            lambda r: (
+                r.order_id.invoice_method and r.order_id.state in ["purchase", "done"]
+            )
         ):
             if line.order_id.invoice_method == "purchase":
                 line.qty_to_invoice = line.product_qty - line.qty_invoiced
