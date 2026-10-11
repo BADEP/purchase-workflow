@@ -2,8 +2,8 @@
 # License AGPL-3 - See https://www.gnu.org/licenses/agpl-3.0.html
 {
     "name": "Purchase Order Weight and Volume",
-    "summary": """Display purchase order weight and volume""",
-    "version": "19.0.1.0.0",
+    "summary": "Display purchase order weight and volume",
+    "version": "20.0.1.0.0",
     "author": "Ilyas, Ooops404, Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/purchase-workflow",
     "category": "Purchase Management",
