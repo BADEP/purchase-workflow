@@ -33,7 +33,7 @@ class TestProductSupplierCodePurchase(TransactionCase):
                         0,
                         {
                             "product_id": self.product.id,
-                            "product_uom_id": self.product.uom_id.id,
+                            "uom_id": self.product.uom_id.id,
                             "price_unit": self.product.standard_price,
                             "name": self.product.name,
                             "date_planned": fields.Datetime.now(),
@@ -51,6 +51,15 @@ class TestProductSupplierCodePurchase(TransactionCase):
 
     def test_supplierinfo_update(self):
         new_product = self.env["product.product"].create({"name": "Test product"})
+        # Odoo 20 no longer creates vendor pricelists on PO confirmation:
+        # the supplier code is written on the existing vendor pricelist.
+        self.env["product.supplierinfo"].create(
+            {
+                "partner_id": self.supplier.id,
+                "product_tmpl_id": new_product.product_tmpl_id.id,
+                "price": 100.0,
+            }
+        )
         purchase_order = self.purchase_model.create(
             {
                 "partner_id": self.supplier.id,
@@ -60,7 +69,7 @@ class TestProductSupplierCodePurchase(TransactionCase):
                         0,
                         {
                             "product_id": new_product.id,
-                            "product_uom_id": new_product.uom_id.id,
+                            "uom_id": new_product.uom_id.id,
                             "price_unit": new_product.standard_price,
                             "name": new_product.name,
                             "date_planned": fields.Datetime.now(),
