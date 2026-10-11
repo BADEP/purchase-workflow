@@ -38,9 +38,7 @@ class PurchaseOrder(models.Model):
         for order in self:
             status = "pending"
             if order.state == "purchase" or order.locked:
-                if order.force_received:
-                    status = "full"
-                elif all(
+                if order.force_received or all(
                     [
                         float_compare(
                             line.qty_received, line.product_qty, precision_digits=prec
