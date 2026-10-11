@@ -54,7 +54,7 @@ class TestPurchaseDeposit(TransactionCase):
                         0,
                         {
                             "product_id": p1.id,
-                            "product_uom_id": p1.uom_id.id,
+                            "uom_id": p1.uom_id.id,
                             "name": p1.name,
                             "price_unit": 100.0,
                             "date_planned": fields.Datetime.now(),
@@ -83,8 +83,7 @@ class TestPurchaseDeposit(TransactionCase):
         CreateDeposit = self.env["purchase.advance.payment.inv"]
         self.po.button_confirm()
         self.assertEqual(self.po.state, "purchase")
-        advance_form = Form(CreateDeposit.with_context(**ctx))
-        return advance_form
+        return Form(CreateDeposit.with_context(**ctx))
 
     def test_create_deposit_invoice(self):
         self.assertEqual(len(self.po.order_line), 1)
