@@ -13,6 +13,8 @@ from odoo.addons.base.tests.common import BaseCommon
 
 @tagged("post_install", "-at_install")
 class TestAutoBillOnReceipt(BaseCommon):
+    _test_user_groups = None
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -55,7 +57,7 @@ class TestAutoBillOnReceipt(BaseCommon):
             {
                 "product_id": product.id,
                 "product_qty": qty,
-                "product_uom_id": product.uom_id.id,
+                "uom_id": product.uom_id.id,
                 "price_unit": price,
                 "tax_ids": [Command.clear()],
             }
@@ -95,17 +97,11 @@ class TestAutoBillOnReceipt(BaseCommon):
 
     def _return(self, picking, quantity=None, to_refund=True, run_cron=True):
         """Create and validate a return for the given picking."""
-        return_wizard = (
-            self.env["stock.return.picking"]
-            .with_context(active_id=picking.id, active_model="stock.picking")
-            .create({})
-        )
-        for move_line in return_wizard.product_return_moves:
-            move_line.to_refund = to_refund
-            if quantity is not None:
-                move_line.quantity = quantity
-        action = return_wizard.action_create_returns()
-        return_picking = self.env["stock.picking"].browse(action["res_id"])
+        return_picking = picking._create_return()
+        return_picking.move_ids.to_refund = to_refund
+        if quantity is not None:
+            return_picking.move_ids.product_uom_qty = quantity
+        return_picking.action_assign()
         if quantity is not None:
             return_picking.move_ids.quantity = quantity
         return_picking.with_context(skip_backorder=True).button_validate()
@@ -203,7 +199,7 @@ class TestAutoBillOnReceipt(BaseCommon):
                         {
                             "product_id": self.product.id,
                             "product_uom_qty": 1.0,
-                            "product_uom": self.product.uom_id.id,
+                            "uom_id": self.product.uom_id.id,
                             "location_id": self.supplier_location.id,
                             "location_dest_id": self.stock_location.id,
                         }
