@@ -5,10 +5,10 @@ import {ProductLabelSectionAndNoteField} from "@account/components/product_label
 import {patch} from "@web/core/utils/patch";
 
 patch(ProductLabelSectionAndNoteField.prototype, {
-    parseLabel(value) {
-        if (this.props.record.resModel === "purchase.order.line") {
-            return value || "";
-        }
-        return super.parseLabel(value);
-    },
+  parseLabel(value) {
+    if (this.props.record.resModel === "purchase.order.line") {
+      return value || "";
+    }
+    return super.parseLabel(value);
+  },
 });
