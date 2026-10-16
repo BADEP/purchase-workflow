@@ -1,0 +1,14 @@
+id,name,model_id,group_id/id,operation,domain
+access_purchase_cost_distribution,purchase.cost.distribution,purchase.cost.distribution,purchase.group_purchase_user,crud,
+purchase_cost_distribution_company_rule,Cost distribution multi-company,purchase.cost.distribution,,crud,"['|',('company_id','=',False),('company_id', 'in', company_ids)]"
+access_purchase_cost_distribution_line,purchase.cost.distribution.line user,purchase.cost.distribution.line,purchase.group_purchase_user,crud,
+purchase_cost_distribution_line_company_rule,Cost distribution line multi-company,purchase.cost.distribution.line,,crud,"['|',('company_id','=',False),('company_id', 'in', company_ids)]"
+access_purchase_cost_distribution_expense,purchase.cost.distribution.expense,purchase.cost.distribution.expense,purchase.group_purchase_user,crud,
+purchase_cost_distribution_expense_company_rule,Cost distribution expense multi-company,purchase.cost.distribution.expense,,crud,"['|',('company_id','=',False),('company_id', 'in', company_ids)]"
+access_purchase_cost_distribution_line_expense,purchase.cost.distribution.line.expense user,purchase.cost.distribution.line.expense,purchase.group_purchase_user,crud,
+purchase_cost_distribution_line_expense_company_rule,Cost distribution line expense multi-company,purchase.cost.distribution.line.expense,,crud,"['|',('company_id','=',False),('company_id', 'in', company_ids)]"
+access_purchase_expense_type,purchase.expense.type user,purchase.expense.type,purchase.group_purchase_user,crud,
+expense_type_company_rule,Expense type multi-company,purchase.expense.type,,crud,"['|',('company_id','=',False),('company_id', 'in', company_ids)]"
+access_import_landed_cost_pickings_wizard,import.landed.cost.pickings.wizard,import.landed.cost.pickings.wizard,purchase.group_purchase_user,crud,
+access_picking_import_wizard,picking.import.wizard,picking.import.wizard,purchase.group_purchase_user,crud,
+access_import_invoice_line_wizard,import.invoice.line.wizard,import.invoice.line.wizard,purchase.group_purchase_user,crud,
