@@ -1,18 +1,17 @@
 # Copyright 2018 Tecnativa - Sergio Teruel
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
-from typing import ClassVar
 
 from odoo import api, fields, models
 from odoo.tools import float_compare
 
 
 class PurchaseOrderLine(models.Model):
-    _inherit: ClassVar[list[str]] = [
+    _inherit = [  # noqa: RUF012
         "purchase.order.line",
         "product.secondary.unit.mixin",
     ]
     _name = "purchase.order.line"
-    _secondary_unit_fields: ClassVar[dict[str, str]] = {
+    _secondary_unit_fields = {  # noqa: RUF012
         "qty_field": "product_qty",
         "uom_field": "uom_id",
     }
