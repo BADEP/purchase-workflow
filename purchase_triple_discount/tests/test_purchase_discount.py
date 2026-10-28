@@ -80,7 +80,7 @@ class TestPurchaseOrder(common.TransactionCase):
                 "date_planned": "2018-01-19 00:00:00",
                 "name": "Line 1",
                 "product_qty": 1.0,
-                "product_uom_id": cls.product1.uom_id.id,
+                "uom_id": cls.product1.uom_id.id,
                 "tax_ids": [Command.set([cls.tax.id])],
                 "price_unit": 600.0,
             }
@@ -92,7 +92,7 @@ class TestPurchaseOrder(common.TransactionCase):
                 "date_planned": "2018-01-19 00:00:00",
                 "name": "Line 2",
                 "product_qty": 10.0,
-                "product_uom_id": cls.product2.uom_id.id,
+                "uom_id": cls.product2.uom_id.id,
                 "tax_ids": [Command.set([cls.tax.id])],
                 "price_unit": 60.0,
             }
@@ -104,7 +104,7 @@ class TestPurchaseOrder(common.TransactionCase):
                 "date_planned": "2020-01-01 00:00:00",
                 "name": "Line 1",
                 "product_qty": 1.0,
-                "product_uom_id": cls.product1.uom_id.id,
+                "uom_id": cls.product1.uom_id.id,
                 "tax_ids": [Command.set([cls.tax.id])],
                 "price_unit": 600.0,
             }
@@ -206,7 +206,7 @@ class TestPurchaseOrder(common.TransactionCase):
                 "date_planned": "2020-01-01 00:00:00",
                 "name": "Line 2",
                 "product_qty": 1.0,
-                "product_uom_id": self.product2.uom_id.id,
+                "uom_id": self.product2.uom_id.id,
                 "tax_ids": [Command.set([self.tax.id])],
                 "price_unit": 999.0,
                 "discount1": 11.11,
@@ -215,16 +215,20 @@ class TestPurchaseOrder(common.TransactionCase):
             }
         )
         self.order2.button_confirm()
-        seller = self.supplierinfo_obj.search(
-            [
-                ("partner_id", "=", self.partner2.id),
-                ("product_tmpl_id", "=", self.product2.product_tmpl_id.id),
-            ]
-        )
-        self.assertTrue(seller)
-        self.assertEqual(seller.discount1, 11.11)
-        self.assertEqual(seller.discount2, 22.22)
-        self.assertEqual(seller.discount3, 33.33)
+        # In 20.0 confirming a PO no longer creates a vendor pricelist: the last
+        # confirmed PO line acts as fallback seller and carries the discounts
+        seller_info = self.product2._select_seller(partner_id=self.partner2)
+        self.assertTrue(seller_info)
+        self.assertEqual(seller_info["discount1"], 11.11)
+        self.assertEqual(seller_info["discount2"], 22.22)
+        self.assertEqual(seller_info["discount3"], 33.33)
+        order3 = self.env["purchase.order"].create({"partner_id": self.partner2.id})
+        with Form(order3) as order_form, order_form.order_line.new() as line:
+            line.product_id = self.product2
+        line = order3.order_line
+        self.assertEqual(line.discount1, 11.11)
+        self.assertEqual(line.discount2, 22.22)
+        self.assertEqual(line.discount3, 33.33)
 
     def test_07_prepare_purchase_order_line_coverage(self):
         from unittest.mock import patch

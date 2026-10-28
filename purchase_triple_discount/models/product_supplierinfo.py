@@ -1,12 +1,16 @@
 # Copyright 2019 Tecnativa - David Vidal
 # Copyright 2019 Tecnativa - Pedro M. Baeza
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
 from odoo import api, models
 
 
 class ProductSupplierInfo(models.Model):
     _name = "product.supplierinfo"
-    _inherit = ["purchase.triple.discount.mixin", "product.supplierinfo"]
+    _inherit = [  # noqa: RUF012
+        "purchase.triple.discount.mixin",
+        "product.supplierinfo",
+    ]
 
     @api.onchange("partner_id")
     def _onchange_partner_id(self):
@@ -31,4 +35,15 @@ class ProductSupplierInfo(models.Model):
     def _get_po_to_supplierinfo_synced_fields(self):
         res = super()._get_po_to_supplierinfo_synced_fields()
         res += self._get_multiple_discount_field_names()
+        return res
+
+    def _get_seller_info(self):
+        res = super()._get_seller_info()
+        if res:
+            res.update(
+                {
+                    fname: self[fname]
+                    for fname in self._get_multiple_discount_field_names()
+                }
+            )
         return res
