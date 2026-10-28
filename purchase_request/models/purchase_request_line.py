@@ -1,8 +1,6 @@
 # Copyright 2018-2019 ForgeFlow, S.L.
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl-3.0)
 
-from typing import ClassVar
-
 from odoo import api, fields, models
 from odoo.exceptions import UserError
 
@@ -19,7 +17,7 @@ _STATES = [
 class PurchaseRequestLine(models.Model):
     _name = "purchase.request.line"
     _description = "Purchase Request Line"
-    _inherit: ClassVar[list[str]] = [
+    _inherit = [  # noqa: RUF012
         "mail.thread",
         "mail.activity.mixin",
         "analytic.mixin",
