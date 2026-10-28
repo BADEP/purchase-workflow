@@ -1,14 +1,12 @@
 # Copyright 2017-19 Tecnativa - David Vidal
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-import typing
-
 from odoo import api, fields, models
 
 
 class PurchaseOrderLine(models.Model):
     _name = "purchase.order.line"
-    _inherit: typing.ClassVar[list[str]] = [
+    _inherit = [  # noqa: RUF012
         "purchase.triple.discount.mixin",
         "purchase.order.line",
     ]
