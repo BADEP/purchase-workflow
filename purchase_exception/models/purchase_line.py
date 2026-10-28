@@ -7,7 +7,10 @@ from odoo import api, fields, models
 
 
 class PurchaseOrderLine(models.Model):
-    _inherit = ["purchase.order.line", "base.exception.method"]
+    _inherit = [  # noqa: RUF012
+        "purchase.order.line",
+        "base.exception.method",
+    ]
     _name = "purchase.order.line"
 
     ignore_exception = fields.Boolean(
