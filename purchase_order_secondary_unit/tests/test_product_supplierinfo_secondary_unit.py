@@ -8,6 +8,8 @@ from .common import TestPurchaseSecondaryUnitCommon
 
 @tagged("-at_install", "post_install")
 class TestProductSupplierinfoSecondaryUnit(TestPurchaseSecondaryUnitCommon):
+    _test_user_groups = None
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
